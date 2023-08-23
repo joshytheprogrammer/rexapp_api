@@ -7,6 +7,35 @@ const validateToken = require('../middleware/validateToken');
 // Apply validateToken middleware to routes that require authentication
 router.use(validateToken);
 
+router.post('/change-name', validateToken, async (req, res) => {
+  const { firstName, lastName } = req.body;
+
+  // Validate first and last name fields
+  if (!firstName || !lastName) {
+    return res.status(400).json({ message: 'Both first and last names are required!' });
+  }
+
+  try {
+    const userId = req.user.id; // Assuming you're using validateToken middleware
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update user's first and last names
+    user.firstName = firstName;
+    user.lastName = lastName;
+
+    await user.save();
+
+    return res.status(200).json({ message: 'Names updated successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while updating names' });
+  }
+});
+
 router.post('/change-username', validateToken, async (req, res) => {
   const newUsername = req.body.newUsername;
 
@@ -133,7 +162,7 @@ router.post('/add-address', validateToken, async (req, res) => {
   }
 });
 
-router.put('/update-address', validateToken, async (req, res) => {
+router.post('/change-address', validateToken, async (req, res) => {
   const { street, city, state, landmark } = req.body;
 
   // Validate address fields
@@ -163,5 +192,7 @@ router.put('/update-address', validateToken, async (req, res) => {
     return res.status(500).json({ message: 'An error occurred while updating address details' });
   }
 });
+
+
 
 module.exports = router
