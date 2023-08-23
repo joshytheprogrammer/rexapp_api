@@ -100,6 +100,38 @@ router.post('/change-password', validateToken, async (req, res) => {
   }
 });
 
+router.post('/add-address', validateToken, async (req, res) => {
+  const { street, city, state, landmark } = req.body;
+
+  // Validate address fields
+  if (!street || !city || !state || !landmark) {
+    return res.status(400).json({ message: 'All address fields are required!' });
+  }
+
+  try {
+    const userId = req.user.id; // Assuming you're using validateToken middleware
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Add a new address to the user's address array
+    user.addresses.push({
+      street,
+      city,
+      state,
+      landmark
+    });
+
+    await user.save();
+
+    return res.status(201).json({ message: 'Address added successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while adding the address' });
+  }
+});
 
 router.put('/update-address', validateToken, async (req, res) => {
   const { street, city, state, landmark } = req.body;
