@@ -2,10 +2,31 @@ const router = require('express').Router();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 const validateToken = require('../middleware/validateToken');
 
 // Apply validateToken middleware to routes that require authentication
 router.use(validateToken);
+
+router.get('/profile', validateToken, async (req, res) => {
+  try {
+    const userId = req.user.id; // Assuming you're using validateToken middleware
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Exclude sensitive fields (like password) from the response
+    const { password, ...profile } = user.toObject();
+
+    return res.status(200).json({ profile });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while fetching the profile' });
+  }
+});
 
 router.post('/change-name', validateToken, async (req, res) => {
   const { firstName, lastName } = req.body;
@@ -159,6 +180,87 @@ router.post('/change-address', validateToken, async (req, res) => {
     return res.status(500).json({ message: 'An error occurred while updating address details' });
   }
 });
+
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if the user with the provided email exists
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate a reset token and expiry time
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetTokenExpiry = Date.now() + 3600000; // Token expires in 1 hour
+
+    // Update user document with reset token and expiry time
+    const hashedResetToken = await bcrypt.hash(resetToken, 10);
+
+    // Store the hashed reset token and expiry time in user document
+    user.resetPassword.token = hashedResetToken;
+    user.resetPassword.expires = resetTokenExpiry;
+    await user.save();
+
+    // Send an email to the user with the reset token
+    const transporter = nodemailer.createTransport({
+      // Configure your email transport (SMTP, API, etc.)
+    });
+
+    const mailOptions = {
+      from: 'your@example.com',
+      to: user.email,
+      subject: 'Password Reset',
+      text: `You are receiving this email because you (or someone else) have requested to reset your password. Please click the following link to reset your password:\n\n
+        ${process.env.CLIENT_URL}/reset-password?resetToken=${resetToken}\n\n
+        If you did not request this, please ignore this email and your password will remain unchanged.`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Error sending email' });
+      }
+
+      return res.status(200).json({ message: 'Password reset email sent successfully' });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred' });
+  }
+});
+
+// Route to handle password reset using the reset token
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { resetToken, newPassword } = req.body;
+
+    // Find the user with the provided reset token and validate expiration
+    const user = await User.findOne({
+      'resetPassword.token': resetToken,
+      'resetPassword.expires': { $gte: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    // Hash the new password and update it in the user document
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+    user.password = hashedPassword;
+    user.resetPassword.token = undefined; // Invalidate the reset token
+    user.resetPassword.expires = undefined;
+    await user.save();
+
+    return res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred' });
+  }
+});
+
 
 
 

@@ -7,6 +7,10 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String },
   lastName: { type: String },
   profilePic: { type: String },
+  resetPassword: {
+    token: {type: String },
+    expires: {}
+  },
   address: {
     street: String,
     city: String,
