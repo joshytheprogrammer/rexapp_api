@@ -5,7 +5,7 @@ const Search = require('../models/Search');
 const { splitQueryIntoKeywords, calculateScore, getClickedItems, sortByPopularity, filterUniqueItems } = require('../utils/searchUtils');
 
 router.get('/exec', async (req, res) => {
-  const searchQuery = req.query.query; // Get the search query from the query parameter
+  const searchQuery = req.query.q; // Get the search query from the query parameter
 
   if (!searchQuery) {
     return res.status(400).json({ message: 'Search query is required.' });
