@@ -11,6 +11,10 @@ router.get('/exec', async (req, res) => {
     return res.status(400).json({ message: 'Search query is required.' });
   }
 
+  if (searchQuery.length < 3) {
+    return res.status(400).json({ message: 'Search query must be greater than three characters.' });
+  }
+
   const keywords = splitQueryIntoKeywords(searchQuery);
 
   const matchingProducts = await Product.find({
