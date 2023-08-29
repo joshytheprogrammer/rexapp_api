@@ -19,7 +19,7 @@ router.get('/profile', validateToken, async (req, res) => {
     }
 
     // Exclude sensitive fields (like password) from the response
-    const { password, ...profile } = user.toObject();
+    const { password, resetPassword, cart, ...profile } = user.toObject();
 
     return res.status(200).json({ profile });
   } catch (error) {
@@ -58,7 +58,7 @@ router.post('/change-name', validateToken, async (req, res) => {
 });
 
 router.post('/change-username', validateToken, async (req, res) => {
-  const newUsername = req.body.newUsername;
+  const newUsername = req.body.username;
 
   // Validate new username
   if (!newUsername) {
@@ -88,7 +88,7 @@ router.post('/change-username', validateToken, async (req, res) => {
 });
 
 router.post('/change-email', validateToken, async (req, res) => {
-  const newEmail = req.body.newEmail;
+  const newEmail = req.body.email;
 
   // Validate new email
   if (!newEmail) {
@@ -260,8 +260,5 @@ router.post('/reset-password', async (req, res) => {
     return res.status(500).json({ message: 'An error occurred' });
   }
 });
-
-
-
 
 module.exports = router
