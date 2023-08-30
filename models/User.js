@@ -12,10 +12,10 @@ const userSchema = new mongoose.Schema({
     expires: {}
   },
   address: {
-    street: String,
-    city: String,
-    state: String,
-    landmark: String
+    street: {type: String, default: ''},
+    city: {type: String, default: ''},
+    state: {type: String, default: ''},
+    landmark: {type: String, default: ''}
   },
   preferences: {
     receivePromotions: { type: Boolean, default: true },

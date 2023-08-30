@@ -15,18 +15,29 @@ router.get('/random', async (req, res) => {
       return res.status(400).json({ message: 'Invalid limit parameter.' });
     }
 
-    const products = await Product.aggregate([
-      { $sample: {size: limit} }, // Use the parsed limit value
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          category: 1,
-          price: 1,
-          imageURL: 1
-        }
-      }
-    ]);
+    let aggregationPipeline = [
+      { $sample: {size: limit} } // Use the parsed limit value
+    ];
+
+    if (req.query.filters) {
+      const filters = JSON.parse(req.query.filters);
+      aggregationPipeline.unshift({ $match: filters });
+    }
+
+    if (req.query.sort) {
+      const sortField = req.query.sort;
+      aggregationPipeline.push({ $sort: { [sortField]: 1 } });
+    }
+
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').reduce((accumulator, field) => {
+        accumulator[field] = 1;
+        return accumulator;
+      }, {});
+      aggregationPipeline.push({ $project: fields });
+    }
+
+    const products = await Product.aggregate(aggregationPipeline);
 
     if (!products.length) {
       return res.status(200).json({ message: 'No products found.' });
@@ -66,7 +77,6 @@ router.get('/recent', async (req, res) => {
     return res.status(500).json({ message: 'An error occurred while fetching products.' });
   }
 });
-
 
 router.get('/:id', async (req, res) => {
   try {

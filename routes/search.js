@@ -5,7 +5,8 @@ const Search = require('../models/Search');
 const { splitQueryIntoKeywords, calculateScore, getClickedItems, sortByPopularity, filterUniqueItems } = require('../utils/searchUtils');
 
 router.get('/exec', async (req, res) => {
-  const searchQuery = req.query.q; // Get the search query from the query parameter
+  const searchQuery = req.query.q;
+  const categoryId = req.query.c;
 
   if (!searchQuery) {
     return res.status(400).json({ message: 'Search query is required.' });
@@ -13,7 +14,7 @@ router.get('/exec', async (req, res) => {
 
   const keywords = splitQueryIntoKeywords(searchQuery);
 
-  const matchingProducts = await Product.find({
+  const productQuery = {
     $or: keywords.map(keyword => ({
       $or: [
         { name: { $regex: keyword, $options: 'i' } },
@@ -24,9 +25,9 @@ router.get('/exec', async (req, res) => {
         { specification: { $regex: keyword, $options: 'i' } }
       ]
     }))
-  });
+  };
 
-  const matchingCategories = await Category.find({
+  const categoryQuery = {
     $or: keywords.map(keyword => ({
       $or: [
         { name: { $regex: keyword, $options: 'i' } },
@@ -34,7 +35,15 @@ router.get('/exec', async (req, res) => {
         { imageURL: { $regex: keyword, $options: 'i' } },
       ]
     }))
-  });
+  };
+
+  if (categoryId && categoryId !== 'all') {
+    productQuery.categories = categoryId;
+    categoryQuery._id = categoryId;
+  }
+
+  const matchingProducts = await Product.find(productQuery);
+  const matchingCategories = await Category.find(categoryQuery);
   // Calculate scores for products and categories
   const productsWithScore = matchingProducts.map(product => ({
     product,
