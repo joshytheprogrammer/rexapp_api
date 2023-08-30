@@ -125,6 +125,10 @@ router.post('/change-password', validateToken, async (req, res) => {
     return res.status(400).json({ message: 'Current password and new password are required!' });
   }
 
+  if (currentPassword === newPassword) {
+    return res.status(400).json({ message: 'Password cannot be the same!' });
+  }
+
   try {
     const userId = req.user.id; 
     const user = await User.findById(userId);
@@ -135,7 +139,7 @@ router.post('/change-password', validateToken, async (req, res) => {
 
     // Check if the current password matches
     if (!bcrypt.compareSync(currentPassword, user.password)) {
-      return res.status(401).json({ message: 'Invalid current password' });
+      return res.status(401).json({ message: 'Invalid current password '});
     }
 
     // Hash and update the new password in the database
