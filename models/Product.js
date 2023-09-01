@@ -7,7 +7,14 @@ const productSchema = new mongoose.Schema({
   description: { type: String, required: true },
   partNumber: { type: String, required: true, unique: true },
   specification: { type: String, required: true },
-  price: { type: Number, required: true },
+  rating: { type: Number, required: true, min: 1, max: 5 },
+  price: {
+    type: {
+      min: { type: Number, required: true },
+      max: { type: Number, required: true }
+    },
+    required: true
+  },
   stock: { type: Number, required: true },
   imageURL: { type: String }
 });

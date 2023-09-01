@@ -5,7 +5,7 @@ const validateToken = require('../middleware/validateToken');
 // Apply validateToken middleware to routes that require authentication
 router.use(validateToken);
 
-router.post('/cart/add', async (req, res) => {
+router.post('/add', async (req, res) => {
   const { partId, quantity } = req.body;
   const userId = req.user.id;
 
@@ -36,7 +36,7 @@ router.post('/cart/add', async (req, res) => {
   }
 });
 
-router.post('/cart/remove', async (req, res) => {
+router.post('/remove', async (req, res) => {
   const { partId } = req.body;
   const userId = req.user.id;
 
@@ -58,11 +58,13 @@ router.post('/cart/remove', async (req, res) => {
   }
 });
 
-router.get('/cart', async (req, res) => {
+router.get('/', async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const user = await User.findById(userId).populate('cart.partId');
+    const user = await User.findById(userId);
+
+    console.log(user.cart)
 
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
@@ -75,7 +77,7 @@ router.get('/cart', async (req, res) => {
   }
 });
 
-router.post('/cart/update-quantity', async (req, res) => {
+router.post('/update-quantity', async (req, res) => {
   const { partId, quantity } = req.body;
   const userId = req.user.id;
 
@@ -99,6 +101,28 @@ router.post('/cart/update-quantity', async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'An error occurred while updating cart item quantity.' });
+  }
+});
+
+router.post('/sync-cart', async (req, res) => {
+  const userId = req.user.id;
+  const { cart } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Overwrite the user's cart with the data sent from the client.
+    user.cart = cart;
+    await user.save();
+
+    return res.status(200).json({ message: 'Cart synced successfully.' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while syncing the cart.' });
   }
 });
 
