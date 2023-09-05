@@ -2,7 +2,6 @@ const router = require('express').Router();
 const Category = require('../models/Category');
 const Search = require('../models/Search');
 
-
 router.get('/all', async (req, res) => {
   try {
     // Define the initial aggregation pipeline
