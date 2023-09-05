@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String, default: '' },
   lastName: { type: String, default: '' },
   profilePic: { type: String, default: '' },
+  isAdmin: { type: Boolean, default: false},
   resetPassword: {
     token: {type: String },
     expires: {}
