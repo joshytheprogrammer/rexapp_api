@@ -47,7 +47,6 @@ router.get('/all', async (req, res) => {
   }
 });
 
-
 router.get('/categories/:slug', async (req, res) => {
   try {
     const slug = req.params.slug;
@@ -74,6 +73,5 @@ router.get('/categories/:slug', async (req, res) => {
     return res.status(500).json({ message: 'An error occurred while fetching the category.' });
   }
 });
-
 
 module.exports = router

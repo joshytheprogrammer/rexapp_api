@@ -12,7 +12,7 @@ const cart = require('./routes/cart');
 const search = require('./routes/search');
 const user = require('./routes/user');
 
-// const admin = require('./routes/admin');
+const admin = require('./routes/admin/index');
 
 dotenv.config();
 const app = express();
@@ -38,6 +38,6 @@ app.use('/api/categories', categories);
 app.use('/api/cart', cart);
 app.use('/api/search', search);
 app.use('/api/user', user);
-// app.use('/api/admin', admin);
+app.use('/api/admin', admin);
 
 module.exports = app;
