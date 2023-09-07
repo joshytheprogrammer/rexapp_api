@@ -12,6 +12,7 @@ const cart = require('./routes/cart');
 const search = require('./routes/search');
 const user = require('./routes/user');
 const orders = require('./routes/orders');
+const guest = require('./routes/guest');
 
 const admin = require('./routes/admin/index');
 
@@ -41,5 +42,6 @@ app.use('/api/search', search);
 app.use('/api/user', user);
 app.use('/api/admin', admin);
 app.use('/api/orders', orders);
+app.use('/api/guest', guest);
 
 module.exports = app;
