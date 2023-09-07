@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const mongoose = require('mongoose');
 const Category = require('../models/Category');
 const Search = require('../models/Search');
 
@@ -47,20 +48,37 @@ router.get('/all', async (req, res) => {
   }
 });
 
-router.get('/categories/:slug', async (req, res) => {
+// Route to handle category fetching by _id
+router.get('/byId/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const category = await Category.findOne({ _id: id });
+    if (!category) {
+      return res.status(400).json({ message: 'Category not found.' });
+    }
+
+    return res.status(200).json({ category });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while fetching the category.' });
+  }
+});
+
+// Route to handle category fetching by slug
+router.get('/bySlug/:slug', async (req, res) => {
   try {
     const slug = req.params.slug;
     const searchId = req.query.search_id;
 
-    const category = await Category.findOne({ slug });
-
+    const category = await Category.findOne({ slug: slug });
     if (!category) {
-      return res.status(404).json({ message: 'Category not found.' });
+      return res.status(400).json({ message: 'Category not found.' });
     }
 
     if (searchId) {
       const search = await Search.findById(searchId);
-
+  
       if (search) {
         search.visitedCategoryId = category._id;
         await search.save();

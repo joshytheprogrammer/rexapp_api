@@ -37,7 +37,8 @@ const userSchema = new mongoose.Schema({
           partId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
           quantity: Number
         }
-      ]
+      ],
+      orderDate: { type: Date, default: Date.now },
     }
   ]
 });

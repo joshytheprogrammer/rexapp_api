@@ -1,4 +1,6 @@
 const router = require('express').Router();
+const mongoose = require('mongoose');
+
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Search = require('../models/Search');
@@ -22,7 +24,7 @@ router.get('/exec', async (req, res) => {
         { manufacturer: { $regex: keyword, $options: 'i' } },
         { imageURL: { $regex: keyword, $options: 'i' } },
         { partNumber: { $regex: keyword, $options: 'i' } },
-        { specification: { $regex: keyword, $options: 'i' } }
+        { specification: { $regex: keyword, $options: 'i' } },
       ]
     }))
   };
@@ -38,8 +40,8 @@ router.get('/exec', async (req, res) => {
   };
 
   if (categoryId && categoryId !== 'all') {
-    productQuery.categories = categoryId;
-    categoryQuery._id = categoryId;
+    productQuery.categories = categoryId; 
+    categoryQuery._id = categoryId; 
   }
 
   const matchingProducts = await Product.find(productQuery);

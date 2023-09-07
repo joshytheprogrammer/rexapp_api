@@ -124,4 +124,51 @@ router.post('/sync-cart', async (req, res) => {
   }
 });
 
+router.post('/checkout', async (req, res) => {
+  try {
+    const userId = req.user.id; // Assuming you have authentication middleware
+    const { cart } = req.body;
+
+    // Validate that the user exists
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    
+    if (!cart) {
+      return res.status(404).json({ message: 'At least one product required.' });
+    }
+
+    // Create a new order
+    const order = {
+      status: 'pending',
+      items: [],
+      orderDate: Date.now(),
+    };
+
+    // Iterate through the cart and add items to the order
+    for (const item of cart) {
+      order.items.push({
+        partId: item.partId,
+        quantity: item.quantity,
+      });
+    }
+
+    // Add the order to the user's orders array
+    user.orders.push(order);
+
+    // Clear the user's cart
+    user.cart = [];
+
+    // Save the updated user document
+    await user.save();
+
+    return res.status(200).json({ message: 'Order placed successfully.', orderId: order._id });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred during checkout.' });
+  }
+});
+
 module.exports = router
