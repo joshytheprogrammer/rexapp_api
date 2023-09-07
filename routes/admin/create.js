@@ -9,9 +9,9 @@ router.use(validateAdminToken);
 router.post('/product', async (req, res) => {
   try {
     // Extract product data from the request body
-    const { name, categories, manufacturer, description, partNumber, specification, rating, price, stock, imageURL } = req.body;
+    const { name, categories, manufacturer, description, partNumber, specification, rating, price, imageURL, slug } = req.body;
 
-    if (!name || !categories || !manufacturer || !description || !partNumber || !specification || !rating || !price || !stock) {
+    if (!name || !categories || !manufacturer || !description || !partNumber || !specification || !rating || !price.min || !price.max  || !imageURL  || !slug) {
       return res.status(400).json({ message: 'All required fields must be provided.' });
     }
 
@@ -25,8 +25,8 @@ router.post('/product', async (req, res) => {
       specification,
       rating,
       price: { min: price.min, max: price.max },
-      stock,
       imageURL,
+      slug
     });
 
     // Save the product to the database
@@ -60,11 +60,11 @@ router.post('/category', async (req, res) => {
     // Save the category to the database
     const savedCategory = await newCategory.save();
 
-    res.status(201).json({ category: savedCategory });
+    res.status(201).json({ message: 'Category created successfully.' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'An error occurred while creating the category.' });
   }
 });
-
+ 
 module.exports = router;
