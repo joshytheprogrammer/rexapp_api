@@ -18,8 +18,8 @@ router.get('/', async (req, res) => {
 
     // Sort the user's orders by date/time ordered and status
     user.orders.sort((a, b) => {
-      if (a.dateOrdered < b.dateOrdered) return -1;
-      if (a.dateOrdered > b.dateOrdered) return 1;
+      if (a.orderDate > b.orderDate) return -1;
+      if (a.orderDate < b.orderDate) return 1;
       if (a.status === 'pending' && b.status !== 'pending') return -1;
       if (a.status !== 'pending' && b.status === 'pending') return 1;
       return 0;
