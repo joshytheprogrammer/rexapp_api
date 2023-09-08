@@ -112,8 +112,7 @@ router.post('/sync-cart', async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
-
-    // Overwrite the user's cart with the data sent from the client.
+    
     user.cart = cart;
     await user.save();
 
@@ -133,11 +132,15 @@ router.post('/checkout', async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
+      return res.status(400).json({ message: 'User not found.' });
     }
     
     if (!cart) {
-      return res.status(404).json({ message: 'At least one product required.' });
+      return res.status(400).json({ message: 'At least one product required.' });
+    }
+
+    if (!Array.isArray(cart) || cart.length === 0) {
+      return res.status(400).json({ message: 'Invalid cart format.' });
     }
 
     // Create a new order
