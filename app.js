@@ -20,7 +20,15 @@ dotenv.config();
 const app = express();
 
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: 'http://localhost:3000', optionsSuccessStatus: 200 }));
+app.use(cors({
+  credentials: true,
+  origin: [
+    'http://localhost:3000',
+    'https://rexapp.netlify.app/',
+    'https://rexapp.demo.joshytheprogrammer.com/'
+  ],
+  optionsSuccessStatus: 200
+}));
 app.use(bodyParser.json());
 
 const mongoUrl = process.env.NODE_ENV === 'development' ? process.env.DEV_MONGO_URL : process.env.PROD_MONGO_URL;
