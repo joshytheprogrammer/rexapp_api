@@ -40,7 +40,7 @@ const mongoUrl = process.env.NODE_ENV === 'development' ? process.env.DEV_MONGO_
 mongoose
   .connect(mongoUrl)
   .then(() => {
-    app.listen(process.env.DEV_PORT || 5500);
+    app.listen(process.env.DEV_PORT || 5000);
   })
   .catch((err) => {
     console.log(err);

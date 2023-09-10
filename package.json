@@ -8,8 +8,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "dev": "nodemon app.js",
-    "test": "jest"
+    "dev": "nodemon --signal SIGUSR2 app.js"
   },
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
