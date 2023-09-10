@@ -69,7 +69,7 @@ router.get('/byId/:id', async (req, res) => {
 router.get('/bySlug/:slug', async (req, res) => {
   try {
     const slug = req.params.slug;
-    const searchId = req.query.search_id;
+    const searchId = req.query.sID;
 
     const category = await Category.findOne({ slug: slug });
     if (!category) {

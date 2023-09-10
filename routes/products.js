@@ -78,10 +78,10 @@ router.get('/recent', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/byId/:id', async (req, res) => {
   try {
     const productID = req.params.id;
-    const searchId = req.query.search_id;
+    const searchId = req.query.sID;
 
     if (!productID) {
       return res.status(401).json({ message: 'No product ID sent!' });
@@ -108,6 +108,5 @@ router.get('/:id', async (req, res) => {
     return res.status(500).json({ message: 'An error occurred while fetching the product.' });
   }
 });
-
 
 module.exports = router
