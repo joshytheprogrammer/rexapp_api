@@ -105,13 +105,13 @@ router.get('/bySlug/:slug', async (req, res) => {
     const searchId = req.query.sID;
 
     if (!slug) {
-      return res.status(401).json({ message: 'No product ID sent!' });
+      return res.status(400).json({ message: 'No product ID sent!' });
     }
 
     const product = await Product.findOne({ slug: slug });
 
     if (!product) {
-      return res.status(200).json({ message: 'No product found with that ID!' });
+      return res.status(400).json({ message: 'No product found with that slug!' });
     }
 
     res.status(200).json({ product });

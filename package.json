@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "dev": "nodemon --delay 1000 app.js"
+    "dev": "nodemon app.js"
   },
   "dependencies": {
     "@faker-js/faker": "^8.0.2",

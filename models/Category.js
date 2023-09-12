@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const categorySchema = new mongoose.Schema({
   name: { type: String, required: true },
-  slug: { type: String, required: true, unique: true }, // Used for URLs
-  imageURL: { type: String, required: true, unique: true }, // Used for URLs
+  slug: { type: String, required: true, unique: true },
+  imageURL: { type: String, required: true, unique: true },
   description: { type: String },
 });
 
