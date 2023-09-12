@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const Category = require('../models/Category');
 const Search = require('../models/Search');
 
