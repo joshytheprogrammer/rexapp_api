@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Product = require('../models/Product');
+const mongoose = require('mongoose');
 const Search = require('../models/Search');
 
 router.get('/random', async (req, res) => {
@@ -127,6 +128,34 @@ router.get('/bySlug/:slug', async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'An error occurred while fetching the product.' });
+  }
+});
+
+router.get('/byCatId/:categoryId', async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
+
+    // Validate if categoryId is a valid ObjectId
+    if (!mongoose.isValidObjectId(categoryId)) {
+      return res.status(400).json({ message: 'Invalid category ID' });
+    }
+
+    // Use the $match and $sample aggregation stages to get random products by category
+    const products = await Product.aggregate([
+      {
+        $match: {
+          categories:  { $elemMatch: { $eq: new mongoose.Types.ObjectId(categoryId) } },
+        },
+      },
+      {
+        $sample: { size: 10 }, // Adjust the size as needed
+      },
+    ]);
+
+    res.status(200).json({ products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while fetching products' });
   }
 });
 
