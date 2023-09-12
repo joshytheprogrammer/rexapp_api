@@ -81,7 +81,6 @@ router.get('/recent', async (req, res) => {
 router.get('/byId/:id', async (req, res) => {
   try {
     const productID = req.params.id;
-    const searchId = req.query.sID;
 
     if (!productID) {
       return res.status(401).json({ message: 'No product ID sent!' });
@@ -93,16 +92,38 @@ router.get('/byId/:id', async (req, res) => {
       return res.status(200).json({ message: 'No product found with that ID!' });
     }
 
+    return res.status(200).json({ product });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while fetching the product.' });
+  }
+});
+
+router.get('/bySlug/:slug', async (req, res) => {
+  try {
+    const slug = req.params.slug;
+    const searchId = req.query.sID;
+
+    if (!slug) {
+      return res.status(401).json({ message: 'No product ID sent!' });
+    }
+
+    const product = await Product.findOne({ slug: slug });
+
+    if (!product) {
+      return res.status(200).json({ message: 'No product found with that ID!' });
+    }
+
+    res.status(200).json({ product });
+
     if (searchId) {
       const search = await Search.findById(searchId);
 
       if (search) {
-        search.visitedProductId = productID;
+        search.visitedProductId = product._id;
         await search.save();
       }
     }
-
-    return res.status(200).json({ product });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'An error occurred while fetching the product.' });

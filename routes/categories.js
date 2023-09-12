@@ -54,6 +54,7 @@ router.get('/byId/:id', async (req, res) => {
     const id = req.params.id;
 
     const category = await Category.findOne({ _id: id });
+
     if (!category) {
       return res.status(400).json({ message: 'Category not found.' });
     }
@@ -72,9 +73,12 @@ router.get('/bySlug/:slug', async (req, res) => {
     const searchId = req.query.sID;
 
     const category = await Category.findOne({ slug: slug });
+
     if (!category) {
       return res.status(400).json({ message: 'Category not found.' });
     }
+
+    res.status(200).json({ category });
 
     if (searchId) {
       const search = await Search.findById(searchId);
@@ -84,8 +88,6 @@ router.get('/bySlug/:slug', async (req, res) => {
         await search.save();
       }
     }
-
-    return res.status(200).json({ category });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'An error occurred while fetching the category.' });
