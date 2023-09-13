@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
   ],
   orders: [
     {
-      orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' },
+      orderId: { type: mongoose.Schema.Types.ObjectId },
       status: { type: String, enum: ['pending', 'completed', 'cancelled'], default: 'pending' },
       items: [
         {
