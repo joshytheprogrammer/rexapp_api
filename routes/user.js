@@ -3,7 +3,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
+const sendMail = require('../utils/mailer');
 const validateToken = require('../middleware/validateToken');
 
 // Apply validateToken middleware to routes that require authentication
@@ -208,13 +208,8 @@ router.post('/forgot-password', async (req, res) => {
     user.resetPassword.expires = resetTokenExpiry;
     await user.save();
 
-    // Send an email to the user with the reset token
-    const transporter = nodemailer.createTransport({
-      // Configure your email transport (SMTP, API, etc.)
-    });
-
-    const mailOptions = {
-      from: 'your@example.com',
+    const emailDetails = {
+      from: 'noreply@rexapp.ng',
       to: user.email,
       subject: 'Password Reset',
       text: `You are receiving this email because you (or someone else) have requested to reset your password. Please click the following link to reset your password:\n\n
@@ -222,13 +217,14 @@ router.post('/forgot-password', async (req, res) => {
         If you did not request this, please ignore this email and your password will remain unchanged.`,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Error sending email' });
-      }
-
+    sendMail(emailDetails)
+    .then((messageId) => {
+      console.log(`Email sent with Message ID: ${messageId}`);
       return res.status(200).json({ message: 'Password reset email sent successfully' });
+    })
+    .catch((error) => {
+      console.error('Error sending email:', error);
+      return res.status(500).json({ message: 'Error sending email' });
     });
   } catch (error) {
     console.error(error);

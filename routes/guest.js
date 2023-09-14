@@ -2,6 +2,8 @@ const router = require('express').Router();
 const User = require('../models/User');
 const Product = require('../models/Product');
 
+const sendMail = require('../utils/mailer');
+
 router.post('/calculateSubtotal', async (req, res) => {
   try {
     const { cart } = req.body;
@@ -36,6 +38,24 @@ router.post('/calculateSubtotal', async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: 'An error occurred while calculating subtotals.' });
   }
+});
+
+router.post('/testMail', async (req, res) => {
+  const emailDetails = {
+    from: 'noreply@mza.studymay.site',
+    to: 'jurassicjoshua@proton.me',
+    subject: 'Test Mail',
+    text: `I am testing the nodemailer package now.`,
+  };
+
+  sendMail(emailDetails)
+  .then(() => {
+    return res.status(200).json({ message: 'Password reset email sent successfully' });
+  })
+  .catch((error) => {
+    console.error('Error sending email:', error);
+    return res.status(500).json({ message: 'Error sending email' });
+  });
 });
 
 module.exports = router;
