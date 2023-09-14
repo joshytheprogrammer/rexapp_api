@@ -13,17 +13,19 @@ const nodemailer = require("nodemailer");
 // });
 
 const transporter = nodemailer.createTransport({
-  host: 'mza.studymay.site',
+  host: 'rexapp.ng',
   port: 465,
   secure: true,
   auth: {
-    user: 'noreply@mza.studymay.site',
-    pass: '0.[dDqc?xg.)vdCQ0J&Y)k87t',
+    user: 'noreply@rexapp.ng',
+    pass: 'A0bau6AM*%PrHj6Df[Jf9pX<y',
   },
 });
 
 // Function to send an email
-async function sendMail({ from, to, subject, text, html }) {
+async function sendMail({ to, subject, text, html }) {
+  const from = 'noreply@rexapp.ng'
+
   try {
     // Send mail with defined transport object
     const info = await transporter.sendMail({
@@ -34,7 +36,7 @@ async function sendMail({ from, to, subject, text, html }) {
       html,    // HTML body
     });
 
-    console.log("Message sent: %s", info.messageId);
+    // console.log("Message sent: %s", info.messageId);
     return info.messageId;
   } catch (error) {
     console.error("Error sending email:", error);

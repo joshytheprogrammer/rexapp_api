@@ -190,8 +190,7 @@ router.post('/checkout', async (req, res) => {
 
 function sendCheckoutMail(user, order_id) {
   const emailDetails = {
-    from: 'noreply@mza.studymay.site',
-    to: 'jurassicjoshua@proton.me',
+    to: user.email,
     subject: `Thank you for your order `,
     html: `
       <!DOCTYPE html>
@@ -233,8 +232,7 @@ function sendCheckoutMail(user, order_id) {
   });
 
   const emailDetails2 = {
-    from: 'noreply@mza.studymay.site',
-    to: 'admin@mayworkslimited.com',
+    to: 'admin@rexapp.ng',
     subject: `Attention required!!!`,
     html: `
       <!DOCTYPE html>
