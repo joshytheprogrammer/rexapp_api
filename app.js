@@ -26,6 +26,8 @@ app.use(cors({
     'http://localhost:3000',
     'https://rexapp.netlify.app',
     'https://rexadmin.netlify.app',
+    'https://rexapp.ng',
+    'https://app.rexapp.ng',
     'https://rexapp.demo.joshytheprogrammer.com',
     'https://admin.rexapp.demo.joshytheprogrammer.com'
   ],
