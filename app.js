@@ -24,6 +24,7 @@ app.use(cors({
   credentials: true,
   origin: [
     'http://localhost:3000',
+    'http://localhost:3001',
     'https://rexapp.netlify.app',
     'https://rexadmin.netlify.app',
     'https://rexapp.ng',
