@@ -6,7 +6,11 @@ const Category = require('../models/Category');
 const Search = require('../models/Search');
 const { splitQueryIntoKeywords, calculateScore, getClickedItems, sortByPopularity, filterUniqueItems } = require('../utils/searchUtils');
 
-router.get('/exec', async (req, res) => {
+const cacher = require('../middleware/cacher');
+const Redis = require('ioredis');
+const redis = new Redis();
+
+router.get('/exec', cacher, async (req, res) => {
 
   try {
     const regex = /[^a-zA-Z0-9_ ]/g;
@@ -126,11 +130,18 @@ router.get('/exec', async (req, res) => {
     const uniqueMergedProducts = filterUniqueItems(sortedMergedProducts);
     const uniqueMergedCategories = filterUniqueItems(sortedMergedCategories);
   
-    return res.status(200).json({
+    res.status(200).json({
       searchId: search._id,
       products: uniqueMergedProducts,
       categories: uniqueMergedCategories
     });
+
+    const cacheKey = req.originalUrl;
+    await redis.set(cacheKey, JSON.stringify({
+      searchId: search._id,
+      products: uniqueMergedProducts,
+      categories: uniqueMergedCategories
+    }));
   }catch(e) {
     console.log(e);
     return res.status(500).json({ message: 'An error occurred while performing search' });

@@ -11,7 +11,7 @@ router.post('/product', async (req, res) => {
     // Extract product data from the request body
     const { name, categories, manufacturer, description, partNumber, specification, rating, price, imageURL, slug } = req.body;
 
-    if (!name || !categories || !manufacturer || !description || !partNumber || !specification || !rating || !price.min || !price.max  || !imageURL  || !slug) {
+    if (!name || !categories || !manufacturer || !description || !price.min || !price.max  || !imageURL  || !slug) {
       return res.status(400).json({ message: 'All required fields must be provided.' });
     }
 
