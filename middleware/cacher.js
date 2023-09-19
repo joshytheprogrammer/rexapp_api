@@ -1,5 +1,5 @@
 const Redis = require('ioredis');
-const redis = new Redis();
+const redis = process.env.NODE_ENV === 'development'? new Redis() : new Redis(process.env.REDIS_URL);
 
 const cacheMiddleware = async (req, res, next) => {
   const cacheKey = req.originalUrl;
