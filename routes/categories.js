@@ -2,10 +2,9 @@ const router = require('express').Router();
 // const mongoose = require('mongoose');
 const Category = require('../models/Category');
 const Search = require('../models/Search');
-const cacher = require('../middleware/cacher');
+const getCache = require('../middleware/cacher');
 
-const Redis = require('ioredis');
-const redis = new Redis();
+const cache = require("../utils/cacher");
 
 router.get('/all', async (req, res) => {
   try {
@@ -53,7 +52,7 @@ router.get('/all', async (req, res) => {
 });
 
 // Route to handle category fetching by _id
-router.get('/byId/:id', cacher, async (req, res) => {
+router.get('/byId/:id', getCache, async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -66,8 +65,7 @@ router.get('/byId/:id', cacher, async (req, res) => {
     res.status(200).json({ category });
 
     // Cache Response
-    const cacheKey = req.originalUrl;
-    await redis.set(cacheKey, JSON.stringify({"category": category}));
+    await cache(req.originalUrl, {"category": category});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'An error occurred while fetching the category.' });
@@ -75,7 +73,7 @@ router.get('/byId/:id', cacher, async (req, res) => {
 });
 
 // Route to handle category fetching by slug
-router.get('/bySlug/:slug', cacher, async (req, res) => {
+router.get('/bySlug/:slug', getCache, async (req, res) => {
   try {
     const slug = req.params.slug;
     const searchId = req.query.sID;
@@ -88,8 +86,8 @@ router.get('/bySlug/:slug', cacher, async (req, res) => {
 
     res.status(200).json({ category });
 
-    const cacheKey = req.originalUrl;
-    await redis.set(cacheKey, JSON.stringify({"category": category}));
+    // Cache Response
+    await cache(req.originalUrl, {"category": category});
 
     if (searchId) {
       const search = await Search.findById(searchId);

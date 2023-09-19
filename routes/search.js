@@ -6,11 +6,10 @@ const Category = require('../models/Category');
 const Search = require('../models/Search');
 const { splitQueryIntoKeywords, calculateScore, getClickedItems, sortByPopularity, filterUniqueItems } = require('../utils/searchUtils');
 
-const cacher = require('../middleware/cacher');
-const Redis = require('ioredis');
-const redis = new Redis();
+const getCache = require('../middleware/cacher');
+const cache = require("../utils/cacher");
 
-router.get('/exec', cacher, async (req, res) => {
+router.get('/exec', getCache, async (req, res) => {
 
   try {
     const regex = /[^a-zA-Z0-9_ ]/g;
@@ -18,7 +17,7 @@ router.get('/exec', cacher, async (req, res) => {
     
     const categoryId = req.query.c;
   
-    if (!searchQuery || searchQuery.length <= 3) {
+    if (!searchQuery || searchQuery.length < 3) {
       return res.status(400).json({ message: 'Search query is required.' });
     }
   
@@ -136,12 +135,12 @@ router.get('/exec', cacher, async (req, res) => {
       categories: uniqueMergedCategories
     });
 
-    const cacheKey = req.originalUrl;
-    await redis.set(cacheKey, JSON.stringify({
+    // Cache Response
+    await cache(req.originalUrl, {
       searchId: search._id,
       products: uniqueMergedProducts,
       categories: uniqueMergedCategories
-    }));
+    });
   }catch(e) {
     console.log(e);
     return res.status(500).json({ message: 'An error occurred while performing search' });

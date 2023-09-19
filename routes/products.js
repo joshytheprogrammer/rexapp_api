@@ -2,10 +2,9 @@ const router = require('express').Router();
 const Product = require('../models/Product');
 const mongoose = require('mongoose');
 const Search = require('../models/Search');
-const cacher = require('../middleware/cacher');
+const getCache = require('../middleware/cacher');
 
-const Redis = require('ioredis');
-const redis = new Redis();
+const cache = require("../utils/cacher");
 
 router.get('/random', async (req, res) => {
   try {
@@ -83,7 +82,7 @@ router.get('/recent', async (req, res) => {
   }
 });
 
-router.get('/byId/:id', cacher, async (req, res) => {
+router.get('/byId/:id', getCache, async (req, res) => {
   try {
     const productID = req.params.id;
 
@@ -100,15 +99,15 @@ router.get('/byId/:id', cacher, async (req, res) => {
     res.status(200).json({ product });
 
     // Cache Response
-    const cacheKey = req.originalUrl;
-    await redis.set(cacheKey, JSON.stringify({"product": product}));
+    await cache(req.originalUrl, {"product": product});
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'An error occurred while fetching the product.' });
   }
 });
 
-router.get('/bySlug/:slug', cacher, async (req, res) => {
+router.get('/bySlug/:slug', getCache, async (req, res) => {
   try {
     const slug = req.params.slug;
     const searchId = req.query.sID;
@@ -126,8 +125,7 @@ router.get('/bySlug/:slug', cacher, async (req, res) => {
     res.status(200).json({ product });
 
     // Cache Response
-    const cacheKey = req.originalUrl;
-    await redis.set(cacheKey, JSON.stringify({"product": product}));
+    await cache(req.originalUrl, {"product": product});
 
     if (searchId) {
       const search = await Search.findById(searchId);
@@ -143,7 +141,7 @@ router.get('/bySlug/:slug', cacher, async (req, res) => {
   }
 });
 
-router.get('/byCatId/:categoryId', cacher, async (req, res) => {
+router.get('/byCatId/:categoryId', async (req, res) => {
   try {
     const categoryId = req.params.categoryId;
 
