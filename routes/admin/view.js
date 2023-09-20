@@ -184,6 +184,97 @@ router.post('/order/complete', async (req, res) => {
   }
 });
 
+router.get('/analytics', async (req, res) => {
+  try {
+    const analytics = await calculateAnalytics();
+    res.status(200).json(analytics);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while calculating user analytics.' });
+  }
+});
+
+// Function to calculate user analytics
+async function calculateAnalytics() {
+  // Use aggregation to calculate user analytics for orders
+  const orderAnalytics = await User.aggregate([
+    {
+      $unwind: '$orders',
+    },
+    {
+      $group: {
+        _id: null,
+        pendingOrders: {
+          $sum: { $cond: [{ $eq: ['$orders.status', 'pending'] }, 1, 0] },
+        },
+        completedOrders: {
+          $sum: { $cond: [{ $eq: ['$orders.status', 'completed'] }, 1, 0] },
+        },
+        cancelledOrders: {
+          $sum: { $cond: [{ $eq: ['$orders.status', 'cancelled'] }, 1, 0] },
+        },
+      },
+    },
+  ]);
+
+  // Use aggregation to calculate user analytics for users
+  const userAnalytics = await User.aggregate([
+    {
+      $group: {
+        _id: null,
+        registeredUsers: { $sum: { $cond: [{ $eq: ['$isAdmin', false] }, 1, 0] } },
+      },
+    },
+  ]);
+
+  // Use aggregation to calculate analytics for products
+  const productAnalytics = await Product.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalProducts: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // Use aggregation to calculate analytics for categories
+  const categoryAnalytics = await Category.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalCategories: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // Since we grouped by _id: null, the result will be a single document
+  if (
+    orderAnalytics.length === 1 &&
+    userAnalytics.length === 1 &&
+    productAnalytics.length === 1 &&
+    categoryAnalytics.length === 1
+  ) {
+    return {
+      pendingOrders: orderAnalytics[0].pendingOrders,
+      completedOrders: orderAnalytics[0].completedOrders,
+      cancelledOrders: orderAnalytics[0].cancelledOrders,
+      registeredUsers: userAnalytics[0].registeredUsers,
+      totalProducts: productAnalytics[0].totalProducts,
+      totalCategories: categoryAnalytics[0].totalCategories,
+    };
+  } else {
+    // No matching documents found
+    return {
+      pendingOrders: 0,
+      completedOrders: 0,
+      cancelledOrders: 0,
+      registeredUsers: 0,
+      totalProducts: 0,
+      totalCategories: 0,
+    };
+  }
+}
+
 function sendFulfillMessage(username, email, orderId) {
   const emailDetails = {
     to: email,
