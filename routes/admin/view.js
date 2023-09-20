@@ -27,7 +27,19 @@ router.get('/users', async (req, res) => {
     return res.status(200).json({ users });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'An error occurred while fetching orders.' });
+    return res.status(500).json({ message: 'An error occurred while fetching users.' });
+  }
+});
+
+router.get('/products', async (req, res) => {
+  try {
+    // Find all users who are not admins
+    const products = await Product.find({});
+
+    return res.status(200).json({ products });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while fetching products.' });
   }
 });
 
@@ -95,9 +107,7 @@ router.get('/products/byId/:id', async (req, res) => {
       return res.status(200).json({ message: 'No product found with that ID!' });
     }
 
-    const { description, rating, categories, ...data} = product.toObject();
-
-    return res.status(200).json({ product: data });
+    return res.status(200).json({ product: product });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'An error occurred while fetching the product.' });
