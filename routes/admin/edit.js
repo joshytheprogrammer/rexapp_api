@@ -24,4 +24,21 @@ router.post('/product/byId/', async (req, res) => {
   }
 });
 
+router.post('/category/byId/', async (req, res) => {
+  try {
+    const {category} = req.body;
+
+    if (!category) {
+      return res.status(400).json({ message: 'No category ID sent!' });
+    }
+
+    await Category.findByIdAndUpdate(category._id, category)
+
+    return res.status(200).json({ message: "Category updated successfully!"});
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while fetching the category.' });
+  }
+});
+
 module.exports = router;

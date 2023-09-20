@@ -43,6 +43,39 @@ router.get('/products', async (req, res) => {
   }
 });
 
+router.get('/categories', async (req, res) => {
+  try {
+    // Find all users who are not admins
+    const categories = await Category.find({});
+
+    return res.status(200).json({ categories });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while fetching categories.' });
+  }
+});
+
+router.get('/categories/byId/:id', async (req, res) => {
+  try {
+    const categoryID = req.params.id;
+
+    if (!categoryID) {
+      return res.status(401).json({ message: 'No category ID sent!' });
+    }
+
+    const category = await Category.findById(categoryID);
+
+    if (!category) {
+      return res.status(200).json({ message: 'No category found with that ID!' });
+    }
+
+    return res.status(200).json({ category: category });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while fetching the product.' });
+  }
+});
+
 router.get('/orders', async (req, res) => {
   try {
     // Find all users who are not admins
