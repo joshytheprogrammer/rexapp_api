@@ -23,16 +23,16 @@ router.post('/product', async (req, res) => {
       description,
       partNumber,
       specification,
-      rating,
+      rating: (rating ? rating : 4),
       price: { min: price.min, max: price.max },
       imageURL,
       slug
     });
 
     // Save the product to the database
-    const savedProduct = await newProduct.save();
+    await newProduct.save();
 
-    res.status(201).json({ product: savedProduct });
+    res.status(201).json({ message: "Product created successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'An error occurred while creating the product.' });
@@ -58,7 +58,7 @@ router.post('/category', async (req, res) => {
     });
 
     // Save the category to the database
-    const savedCategory = await newCategory.save();
+    await newCategory.save();
 
     res.status(201).json({ message: 'Category created successfully.' });
   } catch (error) {

@@ -83,7 +83,7 @@ router.get('/products/byId/:id', async (req, res) => {
       return res.status(200).json({ message: 'No product found with that ID!' });
     }
 
-    const { imageURL, rating, categories, ...data} = product.toObject();
+    const { description, rating, categories, ...data} = product.toObject();
 
     return res.status(200).json({ product: data });
   } catch (error) {

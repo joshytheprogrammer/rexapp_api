@@ -5,8 +5,8 @@ const productSchema = new mongoose.Schema({
   categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true }],
   manufacturer: { type: String, required: true },
   description: { type: String, required: true },
-  partNumber: { type: String, required: true },
-  specification: { type: String, required: true },
+  partNumber: { type: String, default: ''},
+  specification: { type: String, default: '' },
   rating: { type: Number, required: true, min: 1, max: 5 },
   price: {
     type: {
