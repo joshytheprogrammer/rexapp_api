@@ -19,6 +19,18 @@ router.get('/categories/all', async (req, res) => {
   }
 });
 
+router.get('/users', async (req, res) => {
+  try {
+    // Find all users who are not admins
+    const users = await User.find({ isAdmin: false });
+
+    return res.status(200).json({ users });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while fetching orders.' });
+  }
+});
+
 router.get('/orders', async (req, res) => {
   try {
     // Find all users who are not admins
