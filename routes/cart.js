@@ -208,10 +208,10 @@ function sendCheckoutMail(user, order_id) {
 
               <p>We will be reaching out to you with the next three (3) business days with the current price quote of each of the products you ordered. This email will also contain the means of payment.</p>
 
-              <p>After payment, your order will be processed and shipped to the address you have saved with us. If you do not have an address saved, it is recommended you do so <a href="https://rexapp.netlify.app/account/my" style="color: #007bff;"> here</a></p>
+              <p>After payment, your order will be processed and shipped to the address you have saved with us. If you do not have an address saved, it is recommended you do so <a href="https://app.rexapp.ng/account/my" style="color: #007bff;"> here</a></p>
 
               <p>To track the status of your order, please click on the following link:</p>
-              <p><a href="https://rexapp.netlify.app/orders?order=${order_id}" style="color: #007bff;">Track Your Order</a></p>
+              <p><a href="https://app.rexapp.ng/orders?order=${order_id}" style="color: #007bff;">Track Your Order</a></p>
 
               <h4>Order Notes:</h4>
               <p>
