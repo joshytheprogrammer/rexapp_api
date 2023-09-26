@@ -36,7 +36,6 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-
 app.use(bodyParser.json());
 
 const mongoUrl = process.env.NODE_ENV === 'development' ? process.env.DEV_MONGO_URL : process.env.PROD_MONGO_URL;
