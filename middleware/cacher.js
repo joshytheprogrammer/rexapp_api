@@ -1,7 +1,20 @@
 const Redis = require('ioredis');
-const redis = process.env.NODE_ENV === 'development'? new Redis() : new Redis(process.env.REDIS_URL);
+
+// Create a Redis connection with error handling
+let redis;
+try {
+  redis = process.env.NODE_ENV === 'development' ? new Redis() : new Redis(process.env.REDIS_URL);
+} catch (error) {
+  console.error('Error connecting to Redis:', error);
+}
 
 const cacheMiddleware = async (req, res, next) => {
+  if (!redis) {
+    // If there was an error connecting to Redis, skip caching and proceed with the request
+    next();
+    return;
+  }
+
   const cacheKey = req.originalUrl;
 
   try {
