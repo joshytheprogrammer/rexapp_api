@@ -9,14 +9,16 @@ const sendMail = require('../utils/mailer');
 router.post('/login', async (req, res) => {
   // Check if username and password are provided
   try{
-    const { username, password } = req.body;
+    const { identifier, password } = req.body;
 
-    if (!username || !password) {
-      return res.status(400).json({ message: 'Username and password are required!' });
+    if (!identifier || !password) {
+      return res.status(400).json({ message: 'Username/Email and password are required!' });
     }
   
     // Check if the username exists
-    const user = await User.findOne({username: req.body.username})
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { username: identifier }],
+    });
 
     try {
       if(!user) {
